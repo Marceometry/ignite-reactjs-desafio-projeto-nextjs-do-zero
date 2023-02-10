@@ -1,1 +1,48 @@
-// TODO
+.homeContainer {
+  header {
+    padding: 5rem 0 4rem;
+  }
+}
+
+.post {
+  display: block;
+
+  &:not(:first-child) {
+    margin-top: 3rem;
+  }
+
+  &:hover h1 {
+    color: var(--pink-500);
+  }
+
+  h1 {
+    font-size: 1.75rem;
+    transition: color 0.2s;
+  }
+
+  p {
+    font-size: 1.125rem;
+    margin: 0.5rem 0 1.5rem;
+  }
+
+  span {
+    color: var(--gray-600);
+    display: inline-flex;
+    gap: 0.5rem;
+
+    &:not(:first-child) {
+      margin-left: 1.5rem;
+    }
+  }
+}
+
+.loadMoreButton {
+  font-weight: 600;
+  font-size: 1.125rem;
+  color: var(--pink-500);
+  margin-top: 4rem;
+
+  &:hover {
+    text-decoration: underline;
+  }
+}

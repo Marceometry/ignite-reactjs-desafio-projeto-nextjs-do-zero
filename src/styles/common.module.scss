@@ -1,1 +1,6 @@
-// TODO
+.contentContainer {
+  --padding-horizontal: 2rem;
+  max-width: calc(700px + var(--padding-horizontal));
+  padding: 0 var(--padding-horizontal);
+  margin: 0 auto;
+}

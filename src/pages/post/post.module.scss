@@ -4,26 +4,37 @@
   object-fit: cover;
 }
 
-.postContent {
+.postContainer {
   margin-top: 5rem;
   margin-bottom: 5rem;
+}
 
-  .postMainInfo {
-    margin-bottom: 4rem;
+.postMainInfo {
+  margin-bottom: 4rem;
 
-    h1 {
-      font-size: 3rem;
-      margin-bottom: 1.5rem;
+  h1 {
+    font-size: 3rem;
+    margin-bottom: 1.5rem;
+  }
+
+  span {
+    color: var(--gray-600);
+    display: inline-flex;
+    gap: 0.5rem;
+
+    &:not(:first-child) {
+      margin-left: 1.5rem;
     }
+  }
+}
 
-    span {
-      color: var(--gray-600);
-      display: inline-flex;
-      gap: 0.5rem;
+.postContent {
+  h2 {
+    font-size: 2.25rem;
+  }
 
-      &:not(:first-child) {
-        margin-left: 1.5rem;
-      }
-    }
+  p {
+    font-size: 1.125rem;
+    margin: 2rem 0;
   }
 }

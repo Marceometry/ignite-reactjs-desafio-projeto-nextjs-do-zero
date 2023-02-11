@@ -1,10 +1,10 @@
+import { useState } from 'react';
 import { GetStaticProps } from 'next';
 import Link from 'next/link';
 import { format } from 'date-fns';
+import ptBR from 'date-fns/locale/pt-BR';
 import { FiCalendar, FiUser } from 'react-icons/fi';
-
 import { getPrismicClient } from '../services/prismic';
-
 import commonStyles from '../styles/common.module.scss';
 import styles from './home.module.scss';
 
@@ -27,29 +27,20 @@ interface HomeProps {
   postsPagination: PostPagination;
 }
 
-const posts: Post[] = [
-  {
-    uid: 'como-utilizar-hooks',
-    first_publication_date: '2021-03-15T19:25:28+0000',
-    data: {
-      title: 'Como utilizar Hooks',
-      subtitle: 'Pensando em sincronização em vez de ciclos de vida',
-      author: 'Joseph Oliveira',
-    },
-  },
-  {
-    uid: 'criando-um-app-cra-do-zero',
-    first_publication_date: '2021-03-25T19:27:35+0000',
-    data: {
-      title: 'Criando um app CRA do zero',
-      subtitle:
-        'Tudo sobre como criar a sua primeira aplicação utilizando Create React App',
-      author: 'Danilo Vieira',
-    },
-  },
-];
+export default function Home({
+  postsPagination: { results, next_page },
+}: HomeProps): JSX.Element {
+  const [postList, setPostList] = useState<Post[]>(results);
+  const [nextPage, setNextPage] = useState(next_page);
 
-export default function Home(): JSX.Element {
+  async function loadMorePosts(): Promise<void> {
+    const response = await fetch(nextPage);
+    const data = await response.json();
+
+    setNextPage(data.next_page);
+    setPostList(state => [...state, ...data.results]);
+  }
+
   return (
     <div className={`${commonStyles.contentContainer} ${styles.homeContainer}`}>
       <header>
@@ -57,15 +48,19 @@ export default function Home(): JSX.Element {
       </header>
 
       <main>
-        {posts.map(post => (
-          <Link href={`/post/${post.uid}`}>
-            <a className={styles.post} key={post.uid}>
+        {postList.map(post => (
+          <Link href={`/post/${post.uid}`} key={post.uid}>
+            <a className={styles.post}>
               <h1>{post.data.title}</h1>
               <p>{post.data.subtitle}</p>
               <div>
                 <span>
                   <FiCalendar size={18} />
-                  {format(new Date(post.first_publication_date), 'dd MMM yyyy')}
+                  {format(
+                    new Date(post.first_publication_date),
+                    'dd MMM yyyy',
+                    { locale: ptBR }
+                  )}
                 </span>
                 <span>
                   <FiUser size={18} />
@@ -76,17 +71,31 @@ export default function Home(): JSX.Element {
           </Link>
         ))}
 
-        <button className={styles.loadMoreButton} type="button">
-          Carregar mais posts
-        </button>
+        {nextPage && (
+          <button
+            className={styles.loadMoreButton}
+            onClick={loadMorePosts}
+            type="button"
+          >
+            Carregar mais posts
+          </button>
+        )}
       </main>
     </div>
   );
 }
 
-// export const getStaticProps = async () => {
-//   // const prismic = getPrismicClient({});
-//   // const postsResponse = await prismic.getByType(TODO);
+export const getStaticProps: GetStaticProps = async () => {
+  const prismic = getPrismicClient({});
+  const postsResponse = await prismic.getByType('post', { pageSize: 1 });
 
-//   // TODO
-// };
+  return {
+    props: {
+      postsPagination: {
+        next_page: postsResponse.next_page,
+        results: postsResponse.results,
+      },
+    },
+    revalidate: 60 * 60, // 1 hour
+  };
+};
